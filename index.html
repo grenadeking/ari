@@ -3,309 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Captain Ari's 4th Birthday</title>
+    <title>Captain Ari's 4th Birthday Party</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&family=Nunito:wght@400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* 字體設定更新：
-           優先順序：英文字體 -> 微軟雅黑 (Win) -> 萍方 (Mac) -> 系統預設黑體 
-        */
+        /* 字體設定 */
         body {
-            font-family: 'Nunito', 'Microsoft YaHei', 'SimHei', 'PingFang SC', 'PingFang TC', 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+            font-family: 'Nunito', 'Microsoft YaHei', 'SimHei', 'PingFang SC', sans-serif;
             background-color: #E0F7FA;
             overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewport="0 0 24 24" style="fill:black;font-size:24px"><text y="50%">🎈</text></svg>') 16 0, auto; /* 滑鼠變成氣球 */
         }
+        h1, h2, h3, .font-title { font-family: 'Fredoka', 'Microsoft YaHei', 'SimHei', sans-serif; }
         
-        /* 標題字體：可愛英文 + 通用中文 */
-        h1, h2, h3, .font-title { 
-            font-family: 'Fredoka', 'Microsoft YaHei', 'SimHei', 'PingFang SC', sans-serif; 
+        /* === 背景豐富化 (Rich Backgrounds) === */
+        .bg-pattern {
+            background-image: radial-gradient(#40C4FF 2px, transparent 2px), radial-gradient(#FF80AB 2px, transparent 2px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.1;
         }
-        
-        /* 動畫效果 */
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .animate-float-delay { animation: float 7s ease-in-out infinite 1s; }
-        
-        .balloon-item { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .balloon-item:hover { transform: scale(1.1) rotate(-5deg); cursor: pointer; }
 
-        .parallax-layer { position: absolute; width: 100%; height: 100%; will-change: transform; pointer-events: none; }
+        /* 派對三角旗 (Bunting Flags) */
+        .bunting-rope {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 5;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .flag {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid;
+            filter: drop-shadow(2px 3px 0px rgba(0,0,0,0.1));
+            animation: swing 3s infinite ease-in-out;
+            transform-origin: top center;
+        }
+        .flag:nth-child(odd) { border-top-color: #FF80AB; animation-delay: 0s; }
+        .flag:nth-child(even) { border-top-color: #40C4FF; animation-delay: 1.5s; }
+        .flag:nth-child(3n) { border-top-color: #FFD54F; }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* === 動畫增強 === */
+        @keyframes float-crazy {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(10px, -20px) rotate(5deg); }
+            66% { transform: translate(-10px, -10px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .animate-float { animation: float-crazy 6s ease-in-out infinite; }
         
-        /* 登機證背景 */
+        .card-hover:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* 登機證 */
         .boarding-pass {
-            background-image: radial-gradient(circle at 0 50%, transparent 15px, white 16px), 
-                              radial-gradient(circle at 100% 50%, transparent 15px, white 16px);
-            background-position: 0 0, 0 0;
-            background-size: 100% 100%;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            background: #fff;
+            background-image: 
+                linear-gradient(45deg, #f3f4f6 25%, transparent 25%, transparent 75%, #f3f4f6 75%, #f3f4f6),
+                linear-gradient(45deg, #f3f4f6 25%, transparent 25%, transparent 75%, #f3f4f6 75%, #f3f4f6);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            position: relative;
+            clip-path: polygon(
+                0% 0%, 100% 0%, 100% 100%, 0% 100%, 
+                0% 25%, 5% 30%, 0% 35% /* 左邊缺口模擬 */
+            ); 
         }
 
-        /* 語言切換按鈕 */
-        .lang-btn.active { background-color: #F43F5E; color: white; }
+        .lang-btn.active { background-color: #F43F5E; color: white; transform: scale(1.1); box-shadow: 0 4px 6px rgba(244, 63, 94, 0.4); }
     </style>
 </head>
-<body class="text-slate-700 antialiased relative">
+<body class="text-slate-700 antialiased relative selection:bg-rose-200 selection:text-rose-900">
 
-    <audio id="bgm" loop src="https://assets.mixkit.co/music/preview/mixkit-happy-days-120.mp3"></audio> 
+    <audio id="bgm" loop src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_4fcc5d6f1f.mp3?filename=happy-kids-123762.mp3"></audio> 
     <audio id="sfx-pop" src="https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3"></audio>
     <audio id="sfx-boing" src="https://assets.mixkit.co/active_storage/sfx/358/358-preview.mp3"></audio>
     <audio id="sfx-rocket" src="https://assets.mixkit.co/active_storage/sfx/1546/1546-preview.mp3"></audio>
+    <audio id="sfx-cheer" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
-    <div class="fixed top-5 right-5 z-[60] bg-white/90 backdrop-blur rounded-full shadow-lg p-1 flex text-sm font-bold border-2 border-sky-100">
-        <button onclick="setLang('tc')" class="lang-btn px-3 py-1 rounded-full transition-colors active" data-lang="tc">繁</button>
-        <button onclick="setLang('sc')" class="lang-btn px-3 py-1 rounded-full transition-colors text-slate-400 hover:text-rose-500" data-lang="sc">简</button>
-        <button onclick="setLang('en')" class="lang-btn px-3 py-1 rounded-full transition-colors text-slate-400 hover:text-rose-500" data-lang="en">EN</button>
+    <div class="fixed inset-0 bg-pattern z-[-1] pointer-events-none"></div>
+
+    <div class="fixed top-5 right-5 z-[60] bg-white/90 backdrop-blur rounded-full shadow-xl p-1.5 flex text-sm font-bold border-2 border-white ring-2 ring-sky-100">
+        <button onclick="setLang('tc')" class="lang-btn px-4 py-1.5 rounded-full transition-all active" data-lang="tc">繁</button>
+        <button onclick="setLang('sc')" class="lang-btn px-4 py-1.5 rounded-full transition-all text-slate-400 hover:text-rose-500" data-lang="sc">简</button>
+        <button onclick="setLang('en')" class="lang-btn px-4 py-1.5 rounded-full transition-all text-slate-400 hover:text-rose-500" data-lang="en">EN</button>
     </div>
 
-    <button id="music-toggle" class="fixed bottom-6 right-6 z-50 bg-white/90 p-4 rounded-full shadow-xl hover:scale-110 transition-transform border-4 border-rose-200">
-        <i class="fas fa-music text-rose-400 text-xl"></i>
+    <button id="music-toggle" class="fixed bottom-6 right-6 z-50 bg-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform border-4 border-rose-300 animate-bounce">
+        <i class="fas fa-music text-rose-500 text-xl"></i>
     </button>
 
-    <section class="relative h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-100 to-white">
-        <div class="parallax-layer opacity-60" data-speed="0.2">
-            <i class="fas fa-cloud text-white text-9xl absolute top-20 left-10 opacity-80"></i>
-            <i class="fas fa-cloud text-white text-[200px] absolute top-40 right-20 opacity-60"></i>
-            <i class="fas fa-cloud text-white text-8xl absolute bottom-32 left-1/3 opacity-70"></i>
+    <section class="relative min-h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-b from-sky-400 via-sky-200 to-white pt-20">
+        
+        <div class="bunting-rope">
+            <div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div>
+            <div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div>
+            <div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div>
         </div>
 
-        <div class="absolute bottom-0 w-full h-48 bg-gray-200 opacity-20 z-0 mask-image-gradient" style="clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);"></div>
-
-        <div class="absolute right-0 top-0 h-full w-2/3 md:w-1/2 z-10 opacity-40 pointer-events-none mix-blend-multiply">
-            <img src="img (1).jpg" alt="Ari Smile" class="w-full h-full object-cover object-left mask-image-gradient">
+        <div class="absolute inset-0 pointer-events-none">
+            <i class="fas fa-cloud text-white/40 text-9xl absolute top-20 left-10 animate-pulse"></i>
+            <i class="fas fa-cloud text-white/30 text-[200px] absolute top-40 right-20"></i>
+            <i class="fas fa-star text-yellow-300 text-4xl absolute top-32 left-1/3 animate-spin-slow"></i>
+            <i class="fas fa-rocket text-rose-400 text-6xl absolute bottom-32 left-10 opacity-60 animate-bounce"></i>
         </div>
 
-        <div class="relative z-20 text-center px-4" data-speed="0.5">
-            <div class="inline-block animate-float">
-                <span data-i18n="boarding" class="text-rose-500 font-title text-2xl md:text-3xl tracking-widest bg-white/80 px-4 py-1 rounded-full shadow-sm mb-4 inline-block">BOARDING NOW</span>
-            </div>
-            <h1 data-i18n="title_1" class="font-title text-6xl md:text-8xl text-sky-600 drop-shadow-lg mb-2">CAPTAIN ARI</h1>
-            <h2 data-i18n="title_2" class="font-title text-4xl md:text-6xl text-rose-400 mb-6">IS TURNING 4!</h2>
-            
-            <div class="w-64 h-64 mx-auto relative animate-float-delay mb-8 group cursor-pointer" onclick="playSfx('pop')">
-                <div class="absolute -top-20 left-0 w-full text-center text-8xl text-red-400 z-0 group-hover:-translate-y-4 transition-transform">🎈</div>
-                <img src="img (2).jpg" class="w-full h-full object-cover rounded-full border-8 border-white shadow-2xl relative z-10" alt="Ari Pilot">
+        <div class="absolute right-0 top-0 h-full w-2/3 md:w-1/2 z-0 opacity-30 mix-blend-multiply pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-r from-sky-200 to-transparent z-10"></div>
+            <img src="img (1).jpg" class="w-full h-full object-cover object-left mask-image-gradient">
+        </div>
+
+        <div class="relative z-10 text-center px-4 w-full max-w-4xl">
+            <div class="inline-block hover:scale-110 transition-transform cursor-pointer" onclick="confetti()">
+                <span data-i18n="boarding" class="text-white bg-rose-500 font-title text-2xl md:text-3xl tracking-widest px-6 py-2 rounded-full shadow-lg mb-6 inline-block border-4 border-white transform -rotate-2">
+                    <i class="fas fa-ticket-alt mr-2"></i> BOARDING NOW
+                </span>
             </div>
 
-            <p data-i18n="date_loc" class="text-xl text-slate-600 font-bold tracking-wide">25 JAN 2026 | ROSEWOOD HONG KONG</p>
+            <h1 data-i18n="title_1" class="font-title text-6xl md:text-9xl text-white drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-2 stroke-text">CAPTAIN ARI</h1>
+            <h2 data-i18n="title_2" class="font-title text-4xl md:text-7xl text-sky-600 mb-8 drop-shadow-md bg-white/50 inline-block px-4 rounded-lg backdrop-blur-sm">IS TURNING 4!</h2>
             
-            <div id="countdown" class="mt-8 font-title text-2xl text-rose-500 bg-white/70 inline-block px-8 py-3 rounded-2xl shadow-sm min-w-[300px]">
-                Loading...
+            <div class="relative w-72 h-72 mx-auto mb-10 group cursor-pointer animate-float" onclick="playSfx('pop'); confetti({particleCount: 50, spread: 60, origin: { y: 0.6 }});">
+                <div class="absolute -top-16 -left-10 text-8xl z-20 group-hover:-translate-y-6 transition-transform duration-500 drop-shadow-lg">🎈</div>
+                <div class="absolute -top-10 -right-10 text-7xl z-20 group-hover:-translate-y-4 transition-transform duration-700 delay-100 drop-shadow-lg">☁️</div>
+                
+                <div class="w-full h-full rounded-full border-[10px] border-white shadow-2xl overflow-hidden relative z-10 bg-sky-100">
+                    <img src="img (2).jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Ari Pilot">
+                </div>
+                
+                <div class="absolute inset-0 border-[4px] border-dashed border-sky-300 rounded-full animate-spin-slow pointer-events-none" style="animation-duration: 20s;"></div>
+            </div>
+
+            <p data-i18n="date_loc" class="text-2xl text-slate-700 font-bold tracking-wide bg-white/80 py-2 px-6 rounded-full inline-block shadow-sm">
+                <i class="fas fa-map-marker-alt text-rose-500 mr-2"></i> 25 JAN 2026 | ROSEWOOD HK
+            </p>
+            
+            <div id="countdown" class="mt-8 font-title text-2xl text-white bg-sky-500/90 inline-block px-8 py-4 rounded-2xl shadow-xl border-4 border-white/50 animate-pulse min-w-[320px]">
+                Loading Adventure...
             </div>
         </div>
     </section>
 
-    <section class="py-20 bg-amber-50 relative overflow-hidden">
-        <div class="container mx-auto px-6 relative z-10 max-w-4xl">
-            <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl transform rotate-1 border-dashed border-4 border-sky-200 flex flex-col md:flex-row items-center gap-8 hover:rotate-0 transition-transform duration-500">
+    <section class="py-24 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 max-w-5xl">
+            <div class="bg-white/90 backdrop-blur-md p-8 md:p-14 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform rotate-1 border-4 border-rose-100 flex flex-col md:flex-row items-center gap-12 transition-all hover:rotate-0 hover:scale-[1.01]">
                 
-                <div class="w-48 h-48 flex-shrink-0 relative">
-                    <div class="absolute inset-0 bg-yellow-200 rounded-full animate-pulse opacity-50"></div>
-                    <img src="img (3).jpg" class="w-full h-full object-cover rounded-full border-4 border-white shadow-md relative z-10 transform -rotate-6" alt="Bunny Ari">
+                <div class="w-64 h-64 flex-shrink-0 relative group">
+                    <div class="absolute -inset-4 bg-yellow-200 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                    <img src="img (3).jpg" class="w-full h-full object-cover rounded-full border-8 border-white shadow-xl relative z-10 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500" alt="Bunny Ari">
+                    <div class="absolute -bottom-4 -right-4 bg-sky-400 text-white p-3 rounded-full text-2xl shadow-lg bounce-small">🐰</div>
                 </div>
 
-                <div class="text-center md:text-left">
-                    <h3 data-i18n="dear_guests" class="font-title text-3xl text-sky-500 mb-4">Dear Passengers,</h3>
-                    <p data-i18n="invite_text_1" class="text-lg leading-relaxed text-slate-600 mb-4">
+                <div class="text-center md:text-left flex-1">
+                    <h3 data-i18n="dear_guests" class="font-title text-4xl text-sky-500 mb-6 border-b-4 border-yellow-200 inline-block pb-2">Dear Passengers,</h3>
+                    <p data-i18n="invite_text_1" class="text-xl leading-relaxed text-slate-600 mb-6 font-medium">
                         歡迎乘坐 <strong>Ari 航空</strong>！我們的小機長已經準備好迎接他的 4 歲里程碑了！
                     </p>
-                    <p data-i18n="invite_text_2" class="text-lg leading-relaxed text-slate-600">
+                    <p data-i18n="invite_text_2" class="text-xl leading-relaxed text-slate-600 bg-sky-50 p-6 rounded-2xl border-l-8 border-sky-300">
                         在這個特別的日子，我們把 Rosewood 變成了雲端上的遊樂場。這裡沒有大人的拘束，只有歡笑、氣球和魔法！請帶上最燦爛的笑容，來和 Ari 一起在雲端「放飛自我」！
                     </p>
-                    <p data-i18n="sign_off" class="font-title text-xl text-rose-400 mt-6 text-right">- Ari's Mommy & Daddy</p>
+                    <p data-i18n="sign_off" class="font-title text-2xl text-rose-400 mt-8 text-right font-bold transform -rotate-2 bg-yellow-100 inline-block px-4 py-1 shadow-sm">- Ari's Mommy & Daddy</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-24 bg-sky-50 relative">
-        <div class="text-center mb-16">
-            <h2 data-i18n="gallery_title" class="font-title text-5xl text-sky-600">Adventure Moments</h2>
-            <p data-i18n="gallery_sub" class="text-slate-500 mt-2">Ari 的百變表情包</p>
+    <section class="py-24 relative">
+        <div class="text-center mb-20">
+            <span class="text-rose-500 font-bold tracking-widest uppercase mb-2 block">Photo Gallery</span>
+            <h2 data-i18n="gallery_title" class="font-title text-6xl text-sky-600 drop-shadow-sm">Adventure Moments</h2>
+            <div class="w-24 h-2 bg-yellow-300 mx-auto mt-4 rounded-full"></div>
         </div>
 
-        <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="balloon-item animate-float flex flex-col items-center gap-2">
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-yellow-300 shadow-lg bg-white">
-                    <img src="img (4).jpg" class="w-full h-full object-cover" onmouseenter="playSfx('pop')">
+        <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            <div class="balloon-item flex flex-col items-center gap-2 group transform translate-y-8">
+                <div class="w-40 h-40 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl bg-white relative card-hover">
+                    <img src="img (4).jpg" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onmouseenter="playSfx('pop')">
                 </div>
-                <div class="h-16 w-0.5 bg-slate-300"></div>
+                <div class="h-24 w-1 bg-slate-300 origin-top animate-swing"></div>
             </div>
 
-            <div class="balloon-item animate-float-delay mt-12 flex flex-col items-center gap-2">
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-pink-300 shadow-lg bg-white">
-                    <img src="img (5).jpg" class="w-full h-full object-cover" onmouseenter="playSfx('pop')">
+            <div class="balloon-item flex flex-col items-center gap-2 group transform -translate-y-4">
+                <div class="w-40 h-40 rounded-full overflow-hidden border-8 border-rose-300 shadow-2xl bg-white relative card-hover">
+                    <img src="img (5).jpg" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onmouseenter="playSfx('pop')">
                 </div>
-                <div class="h-16 w-0.5 bg-slate-300"></div>
+                <div class="h-16 w-1 bg-slate-300 origin-top animate-swing"></div>
             </div>
 
-            <div class="col-span-2 flex justify-center items-center relative group">
-                <i class="fas fa-cloud text-white text-[300px] absolute drop-shadow-xl transform group-hover:scale-105 transition-transform duration-500"></i>
-                <div class="w-48 h-32 overflow-hidden relative z-10 rounded-2xl rotate-3 mask-image">
+            <div class="col-span-2 flex justify-center items-center relative group py-10">
+                <i class="fas fa-cloud text-white text-[320px] absolute drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500 text-sky-100"></i>
+                <div class="w-56 h-36 overflow-hidden relative z-10 rounded-2xl rotate-3 border-4 border-white shadow-sm transform group-hover:-rotate-3 transition-all duration-500">
                     <img src="img (6).jpg" class="w-full h-full object-cover" onmouseenter="playSfx('pop')">
                 </div>
-                <div class="absolute -right-10 bottom-0 w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg animate-bounce hidden md:block">
+                <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl animate-bounce hidden md:block z-20">
                      <img src="img (7).jpg" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
         
-        <div id="funny-trigger" class="mt-20 flex justify-center opacity-0 transition-opacity duration-1000 transform translate-y-10">
-            <div class="relative cursor-pointer hover:scale-110 transition-transform" onclick="playSfx('boing')">
-                <img src="img (8).jpg" class="rounded-full border-8 border-rose-400 shadow-2xl w-48 h-48 md:w-64 md:h-64 object-cover">
-                <div data-i18n="ready_party" class="absolute -right-10 -top-10 bg-yellow-400 text-white font-title p-4 rounded-full rotate-12 shadow-lg animate-bounce">
-                    Ready to Party?!
+        <div id="funny-trigger" class="mt-32 flex justify-center transform transition-all duration-700 translate-y-20 opacity-0">
+            <div class="relative cursor-pointer group" onclick="playSfx('boing'); confetti()">
+                <div class="absolute inset-0 bg-yellow-400 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity"></div>
+                <img src="img (8).jpg" class="rounded-full border-[12px] border-rose-400 shadow-[0_20px_60px_rgba(244,63,94,0.4)] w-56 h-56 md:w-72 md:h-72 object-cover relative z-10 group-hover:scale-110 transition-transform duration-300 cubic-bezier(0.175, 0.885, 0.32, 1.275)">
+                <div data-i18n="ready_party" class="absolute -right-16 -top-12 bg-sky-500 text-white font-title text-xl p-6 rounded-full rotate-12 shadow-xl animate-bounce border-4 border-white z-20">
+                    Ready to Party?! 🤪
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-20 bg-white relative">
-        <h2 data-i18n="itinerary_title" class="font-title text-4xl text-center text-slate-700 mb-12">Flight Itinerary</h2>
+    <section class="py-24 bg-white relative clip-path-slant">
+        <div class="bunting-rope"><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div></div>
         
-        <div class="max-w-2xl mx-auto px-6 relative">
-            <div class="absolute left-10 md:left-1/2 top-0 bottom-0 w-1 bg-sky-200 border-l-4 border-dotted h-full -translate-x-1/2 z-0"></div>
+        <h2 data-i18n="itinerary_title" class="font-title text-5xl text-center text-slate-700 mb-16"><i class="fas fa-plane-departure mr-4 text-sky-400"></i>Flight Itinerary</h2>
+        
+        <div class="max-w-3xl mx-auto px-6 relative">
+            <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-sky-100 border-l-4 border-dashed border-sky-300 h-full -translate-x-1/2 z-0"></div>
 
-            <div class="relative z-10 flex items-center mb-12 md:justify-between group">
-                <div class="order-1 md:w-5/12 text-left md:text-right px-4 hidden md:block">
-                    <h3 class="font-bold text-xl text-rose-500">Check-in</h3>
-                    <p data-i18n="time_1_desc" class="text-slate-500">登機報到 & 雲端攝影區</p>
+            <div class="relative z-10 flex items-center mb-16 md:justify-between group hover-trigger">
+                <div class="order-1 md:w-5/12 text-left md:text-right px-6 hidden md:block">
+                    <h3 class="font-bold text-2xl text-rose-500">Check-in</h3>
+                    <p data-i18n="time_1_desc" class="text-slate-500 text-lg">登機報到 & 雲端攝影區</p>
                 </div>
-                <div class="order-1 md:w-2/12 flex justify-center">
-                    <div class="w-16 h-16 bg-sky-100 rounded-full border-4 border-white shadow-lg flex items-center justify-center overflow-hidden group-hover:scale-125 transition-transform">
+                <div class="order-1 md:w-2/12 flex justify-center relative">
+                    <div class="w-20 h-20 bg-white rounded-full border-4 border-sky-300 shadow-lg flex items-center justify-center overflow-hidden group-hover:scale-125 transition-transform z-10 relative">
                         <img src="img (9).jpg" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/100?text=Cam'">
                     </div>
                 </div>
-                <div class="order-1 w-full md:w-5/12 px-4 md:hidden">
-                    <span class="font-bold text-rose-500">12:30 PM</span> <span data-i18n="time_1_desc_m">Check-in</span>
+                <div class="order-1 w-full md:w-5/12 px-6 md:hidden pl-20">
+                    <span class="font-bold text-rose-500 text-xl">12:30 PM</span> <br><span data-i18n="time_1_desc_m">Check-in</span>
                 </div>
-                <div class="order-1 md:w-5/12 px-4 hidden md:block">
-                    <span class="font-bold text-sky-400 text-2xl">12:30 PM</span>
-                </div>
-            </div>
-
-            <div class="relative z-10 flex items-center mb-12 md:justify-between group">
-                 <div class="order-1 md:w-5/12 text-left md:text-right px-4 hidden md:block">
-                    <span class="font-bold text-sky-400 text-2xl">02:00 PM</span>
-                </div>
-                <div class="order-1 md:w-2/12 flex justify-center">
-                    <img src="img (10).jpg" class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover group-hover:rotate-12 transition-transform" onmouseenter="playSfx('pop')">
-                </div>
-                <div class="order-1 md:w-5/12 px-4">
-                    <h3 class="font-bold text-xl text-rose-500">Energy Refuel</h3>
-                    <p data-i18n="time_2_desc" class="text-slate-500">空中補給站 (午宴)</p>
+                <div class="order-1 md:w-5/12 px-6 hidden md:block">
+                    <span class="font-bold text-sky-400 text-3xl">12:30 PM</span>
                 </div>
             </div>
 
-            <div class="relative z-10 flex items-center mb-12 md:justify-between group">
-                <div class="order-1 md:w-5/12 text-left md:text-right px-4 hidden md:block">
-                    <h3 class="font-bold text-xl text-rose-500">Cake Ceremony</h3>
-                    <p data-i18n="time_3_desc" class="text-slate-500">Ari 機長生日慶典！</p>
+            <div class="relative z-10 flex items-center mb-16 md:justify-between group hover-trigger">
+                 <div class="order-1 md:w-5/12 text-left md:text-right px-6 hidden md:block">
+                    <span class="font-bold text-sky-400 text-3xl">02:00 PM</span>
                 </div>
                 <div class="order-1 md:w-2/12 flex justify-center">
-                    <img src="img (11).jpg" class="w-20 h-20 rounded-full border-4 border-yellow-300 shadow-xl object-cover animate-pulse" onmouseenter="playSfx('pop')">
+                    <div class="w-20 h-20 rounded-full border-4 border-yellow-300 shadow-lg overflow-hidden group-hover:scale-125 transition-transform z-10 bg-white">
+                        <img src="img (10).jpg" class="w-full h-full object-cover">
+                    </div>
                 </div>
-                <div class="order-1 md:w-5/12 px-4">
-                    <span class="font-bold text-sky-400 text-2xl block md:hidden">03:00 PM Cake!</span>
-                    <span class="font-bold text-sky-400 text-2xl hidden md:block">03:00 PM</span>
+                <div class="order-1 md:w-5/12 px-6 pl-20 md:pl-6">
+                    <h3 class="font-bold text-2xl text-rose-500">Energy Refuel</h3>
+                    <p data-i18n="time_2_desc" class="text-slate-500 text-lg">空中補給站 (午宴)</p>
+                    <span class="md:hidden text-sky-400 font-bold block mt-1">02:00 PM</span>
+                </div>
+            </div>
+
+            <div class="relative z-10 flex items-center mb-16 md:justify-between group hover-trigger">
+                <div class="order-1 md:w-5/12 text-left md:text-right px-6 hidden md:block">
+                    <h3 class="font-bold text-2xl text-rose-500">Cake Ceremony</h3>
+                    <p data-i18n="time_3_desc" class="text-slate-500 text-lg">Ari 機長生日慶典！</p>
+                </div>
+                <div class="order-1 md:w-2/12 flex justify-center">
+                    <div class="w-24 h-24 rounded-full border-4 border-rose-400 shadow-xl overflow-hidden animate-pulse z-10 bg-white">
+                        <img src="img (11).jpg" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="order-1 md:w-5/12 px-6 pl-20 md:pl-6">
+                    <span class="font-bold text-sky-400 text-3xl block md:hidden">03:00 PM Cake!</span>
+                    <span class="font-bold text-sky-400 text-3xl hidden md:block">03:00 PM</span>
+                    <p class="md:hidden text-slate-500">生日切蛋糕儀式</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-20 bg-amber-50">
-        <div class="container mx-auto px-4 max-w-3xl text-center">
-            <h2 data-i18n="menu_title" class="font-title text-4xl text-rose-400 mb-8">In-Flight Menu</h2>
+    <section class="py-24 bg-amber-50 relative">
+        <div class="absolute inset-0 bg-pattern opacity-30"></div>
+        <div class="container mx-auto px-4 max-w-4xl text-center relative z-10">
+            <h2 data-i18n="menu_title" class="font-title text-5xl text-rose-400 mb-10 bg-white inline-block px-8 py-2 rounded-full shadow-sm">In-Flight Menu</h2>
             
-            <div class="flex justify-center gap-4 mb-8">
-                <button onclick="switchMenu('kids')" id="btn-kids" data-i18n="btn_kids" class="px-6 py-2 rounded-full font-bold bg-sky-400 text-white shadow-lg transform scale-110 transition-all">Junior Pilots 👶</button>
-                <button onclick="switchMenu('adults')" id="btn-adults" data-i18n="btn_adults" class="px-6 py-2 rounded-full font-bold bg-white text-slate-500 shadow-md hover:bg-sky-100 transition-all">First Class 🥂</button>
+            <div class="flex justify-center gap-6 mb-10">
+                <button onclick="switchMenu('kids')" id="btn-kids" class="px-8 py-3 rounded-full font-bold text-lg bg-sky-400 text-white shadow-lg transform scale-110 transition-all hover:shadow-xl"><i class="fas fa-child mr-2"></i> Junior Pilots</button>
+                <button onclick="switchMenu('adults')" id="btn-adults" class="px-8 py-3 rounded-full font-bold text-lg bg-white text-slate-500 shadow-md hover:bg-sky-100 transition-all"><i class="fas fa-glass-cheers mr-2"></i> First Class</button>
             </div>
 
-            <div id="menu-kids" class="bg-white p-8 rounded-3xl shadow-xl border-4 border-sky-100 transition-all">
-                <ul class="space-y-4 text-lg text-slate-600" id="kids-list">
-                    <li class="flex items-center gap-2 justify-center"><i class="fas fa-hamburger text-orange-400"></i> Mini Wagyu Cheeseburgers</li>
-                </ul>
-            </div>
-
-            <div id="menu-adults" class="hidden bg-white p-8 rounded-3xl shadow-xl border-4 border-rose-100 transition-all">
-                <ul class="space-y-4 text-lg text-slate-600" id="adults-list">
-                    <li class="flex items-center gap-2 justify-center"><i class="fas fa-dumpling text-yellow-600"></i> Rosewood Signature Dim Sum</li>
-                </ul>
-            </div>
+            <div id="menu-content" class="bg-white p-10 rounded-[3rem] shadow-2xl border-b-8 border-sky-200 transition-all min-h-[300px] flex items-center justify-center flex-col">
+                </div>
         </div>
     </section>
 
-    <section class="py-24 bg-sky-600 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/clouds.png')]"></div>
+    <section class="py-32 bg-sky-600 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/clouds.png')] opacity-30 animate-[drift_60s_linear_infinite]"></div>
         
-        <div class="container mx-auto px-4 relative z-10 max-w-2xl">
-            <h2 data-i18n="rsvp_title" class="font-title text-4xl text-white text-center mb-10">Ready for Takeoff?</h2>
+        <div class="container mx-auto px-4 relative z-10 max-w-3xl">
+            <h2 data-i18n="rsvp_title" class="font-title text-5xl text-white text-center mb-12 drop-shadow-md">Ready for Takeoff?</h2>
 
-            <div class="boarding-pass bg-white p-8 rounded-3xl w-full">
-                <div class="flex justify-between items-center border-b-2 border-dashed border-slate-300 pb-4 mb-6">
-                    <span class="font-title text-2xl text-rose-500">ARI AIRLINES</span>
-                    <span class="text-slate-400 font-mono">GATE: 04</span>
+            <div class="boarding-pass p-8 md:p-12 shadow-2xl transform hover:-translate-y-2 transition-transform duration-300">
+                <div class="flex justify-between items-center border-b-4 border-dashed border-slate-200 pb-6 mb-8">
+                    <div>
+                        <span class="font-title text-3xl text-rose-500 block">ARI AIRLINES</span>
+                        <span class="text-sm text-slate-400 uppercase tracking-widest">First Class Ticket</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-slate-400 font-mono block">GATE</span>
+                        <span class="text-4xl font-bold text-slate-700">04</span>
+                    </div>
                 </div>
 
-                <form id="rsvp-form" class="space-y-4" onsubmit="launchRocket(event)">
+                <form id="rsvp-form" class="space-y-6" onsubmit="launchRocket(event)">
                     <div>
-                        <label data-i18n="form_name" class="block text-sm font-bold text-slate-500 mb-1">PASSENGER NAME</label>
-                        <input type="text" required class="w-full bg-slate-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-sky-300" placeholder="Your Name">
+                        <label data-i18n="form_name" class="block text-sm font-bold text-slate-500 mb-2 uppercase tracking-wide">Passenger Name</label>
+                        <input type="text" required class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 text-lg transition-all" placeholder="Enter full name">
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label data-i18n="form_adults" class="block text-sm font-bold text-slate-500 mb-1">ADULTS</label>
-                            <select class="w-full bg-slate-100 rounded-lg p-3"><option>1</option><option>2</option><option>3+</option></select>
+                            <label data-i18n="form_adults" class="block text-sm font-bold text-slate-500 mb-2 uppercase tracking-wide">Adults</label>
+                            <div class="relative">
+                                <select class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 appearance-none text-lg"><option>1</option><option>2</option><option>3+</option></select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                            </div>
                         </div>
                         <div>
-                            <label data-i18n="form_kids" class="block text-sm font-bold text-slate-500 mb-1">KIDS</label>
-                            <select class="w-full bg-slate-100 rounded-lg p-3"><option>0</option><option>1</option><option>2+</option></select>
+                            <label data-i18n="form_kids" class="block text-sm font-bold text-slate-500 mb-2 uppercase tracking-wide">Kids</label>
+                            <div class="relative">
+                                <select class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 appearance-none text-lg"><option>0</option><option>1</option><option>2+</option></select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                            </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label data-i18n="form_diet" class="block text-sm font-bold text-slate-500 mb-1">DIETARY REQUESTS</label>
-                        <textarea class="w-full bg-slate-100 rounded-lg p-3 h-20 placeholder-slate-400" placeholder="..."></textarea>
+                        <label data-i18n="form_diet" class="block text-sm font-bold text-slate-500 mb-2 uppercase tracking-wide">Remarks / Allergies</label>
+                        <textarea class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 h-24 placeholder-slate-300 focus:outline-none focus:border-sky-400 transition-all"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-title text-xl py-4 rounded-xl shadow-lg mt-4 transition-transform active:scale-95 flex items-center justify-center gap-2 group">
-                        <span data-i18n="btn_blast">BLAST OFF!</span> <i class="fas fa-rocket group-hover:-translate-y-1 transition-transform"></i>
+                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-title text-2xl py-5 rounded-2xl shadow-lg shadow-rose-200 mt-6 transition-all active:scale-95 flex items-center justify-center gap-3 group overflow-hidden relative">
+                        <span class="relative z-10" data-i18n="btn_blast">BLAST OFF!</span> 
+                        <i class="fas fa-rocket relative z-10 group-hover:-translate-y-1 transition-transform"></i>
+                        <div class="absolute inset-0 bg-gradient-to-r from-rose-400 to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </button>
                 </form>
+
+                <div class="mt-8 pt-6 border-t-4 border-dashed border-slate-200 text-center">
+                    <i class="fas fa-barcode text-6xl text-slate-200"></i>
+                </div>
             </div>
             
-            <div class="absolute -bottom-10 -right-10 opacity-10 pointer-events-none">
-                 <img src="img (12).jpg" class="w-64 h-64 object-cover rounded-full">
+            <div class="absolute -bottom-16 -right-16 opacity-20 pointer-events-none rotate-12">
+                 <img src="img (12).jpg" class="w-64 h-64 object-cover rounded-full border-8 border-white">
             </div>
         </div>
     </section>
 
-    <footer class="bg-sky-800 text-white py-8 text-center relative">
-        <p class="opacity-70">Designed with ❤️ for Captain Ari.</p>
-        <div class="mt-2 text-2xl cursor-pointer hover:scale-125 transition-transform inline-block" id="easter-egg-btn" onclick="triggerEasterEgg()">
-            🐰
+    <footer class="bg-slate-800 text-white py-12 text-center relative overflow-hidden">
+        <div class="relative z-10">
+            <h3 class="font-title text-3xl mb-4">See you in the clouds!</h3>
+            <p class="opacity-60 text-sm">Designed with ❤️ for Captain Ari.</p>
+            <div class="mt-8 text-4xl cursor-pointer hover:scale-125 transition-transform inline-block animate-bounce" id="easter-egg-btn" onclick="triggerEasterEgg()">
+                🐰
+            </div>
         </div>
+        <i class="fas fa-cloud text-white/5 text-9xl absolute bottom-0 left-0"></i>
+        <i class="fas fa-cloud text-white/5 text-9xl absolute top-10 right-0"></i>
     </footer>
 
-    <div id="rocket-overlay" class="fixed inset-0 bg-sky-900 z-[100] hidden flex-col items-center justify-center text-white">
-        <i class="fas fa-rocket text-9xl text-rose-500 animate-bounce mb-8"></i>
-        <h2 data-i18n="confirmed" class="font-title text-5xl text-center">BOARDING CONFIRMED!</h2>
-        <p data-i18n="see_you" class="mt-4 text-xl">See you in the clouds!</p>
+    <div id="rocket-overlay" class="fixed inset-0 bg-sky-900/95 backdrop-blur-xl z-[100] hidden flex-col items-center justify-center text-white">
+        <div class="relative">
+            <i class="fas fa-rocket text-9xl text-rose-500 animate-bounce mb-8 relative z-10"></i>
+            <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full animate-pulse"></div>
+        </div>
+        <h2 data-i18n="confirmed" class="font-title text-5xl md:text-7xl text-center mb-4 drop-shadow-lg">BOARDING CONFIRMED!</h2>
+        <p data-i18n="see_you" class="text-2xl text-sky-200 font-bold">See you in the clouds!</p>
     </div>
 
-    <div id="easter-modal" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-center justify-center" onclick="this.classList.add('hidden')">
-        <img src="img (13).jpg" class="max-w-xs md:max-w-md rounded-3xl border-8 border-white animate-spin-slow">
+    <div id="easter-modal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="this.classList.add('hidden')">
+        <div class="text-center">
+            <img src="img (13).jpg" class="max-w-[300px] md:max-w-md rounded-3xl border-[10px] border-white shadow-2xl animate-spin-slow mb-4 mx-auto">
+            <p class="text-white font-title text-3xl">Surprise! 🎉</p>
+        </div>
     </div>
 
     <script>
-        // --- 1. 多語言資料庫 (Translations) ---
+        // --- Confetti Effect (慶祝特效) ---
+        function runConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var random = function(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) { return clearInterval(interval); }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+        
+        // Load Confetti on Start
+        window.addEventListener('load', () => {
+            runConfetti();
+        });
+
+        // --- Translations ---
         const translations = {
             tc: {
                 boarding: "現正登機",
@@ -317,7 +433,6 @@
                 invite_text_2: "在這個特別的日子，我們把 Rosewood 變成了雲端上的遊樂場。這裡沒有大人的拘束，只有歡笑、氣球和魔法！",
                 sign_off: "- Ari 的爸爸媽媽",
                 gallery_title: "冒險時刻",
-                gallery_sub: "Ari 的百變表情包",
                 ready_party: "準備好狂歡了嗎?!",
                 itinerary_title: "飛行路線圖",
                 time_1_desc: "登機報到 & 雲端攝影區",
@@ -325,8 +440,6 @@
                 time_2_desc: "空中補給站 (午宴)",
                 time_3_desc: "Ari 機長生日慶典！",
                 menu_title: "空中菜單",
-                btn_kids: "小小機長餐 👶",
-                btn_adults: "頭等艙餐飲 🥂",
                 rsvp_title: "準備起飛?",
                 form_name: "乘客姓名",
                 form_adults: "大人",
@@ -335,12 +448,8 @@
                 btn_blast: "確認起飛!",
                 confirmed: "登機確認!",
                 see_you: "雲端見!",
-                menu_kids_items: [
-                    "迷你和牛芝士漢堡", "雲朵造型雞肉三明治", "彩虹水果火箭串", "奶油蘑菇通心粉"
-                ],
-                menu_adults_items: [
-                    "瑰麗精選點心拼盤", "迷你波士頓龍蝦包", "精選香檳及特調飲品"
-                ]
+                menu_kids: [ "迷你和牛芝士漢堡", "雲朵造型雞肉三明治", "彩虹水果火箭串", "奶油蘑菇通心粉", "鮮榨果汁" ],
+                menu_adults: [ "瑰麗精選點心拼盤", "迷你波士頓龍蝦包", "黑松露野菌撻", "精選香檳及特調飲品" ]
             },
             sc: {
                 boarding: "现正登机",
@@ -352,7 +461,6 @@
                 invite_text_2: "在这个特别的日子，我们把 Rosewood 变成了云端上的游乐场。这里没有大人的拘束，只有欢笑、气球和魔法！",
                 sign_off: "- Ari 的爸爸妈妈",
                 gallery_title: "冒险时刻",
-                gallery_sub: "Ari 的百变表情包",
                 ready_party: "准备好狂欢了吗?!",
                 itinerary_title: "飞行路线图",
                 time_1_desc: "登机报到 & 云端摄影区",
@@ -360,8 +468,6 @@
                 time_2_desc: "空中补给站 (午宴)",
                 time_3_desc: "Ari 机长生日庆典！",
                 menu_title: "空中菜单",
-                btn_kids: "小小机长餐 👶",
-                btn_adults: "头等舱餐饮 🥂",
                 rsvp_title: "准备起飞?",
                 form_name: "乘客姓名",
                 form_adults: "大人",
@@ -370,12 +476,8 @@
                 btn_blast: "确认起飞!",
                 confirmed: "登机确认!",
                 see_you: "云端见!",
-                menu_kids_items: [
-                    "迷你和牛芝士汉堡", "云朵造型鸡肉三明治", "彩虹水果火箭串", "奶油蘑菇通心粉"
-                ],
-                menu_adults_items: [
-                    "瑰丽精选点心拼盘", "迷你波士顿龙虾包", "精选香槟及特调饮品"
-                ]
+                menu_kids: [ "迷你和牛芝士汉堡", "云朵造型鸡肉三明治", "彩虹水果火箭串", "奶油蘑菇通心粉", "鲜榨果汁" ],
+                menu_adults: [ "瑰丽精选点心拼盘", "迷你波士顿龙虾包", "黑松露野菌挞", "精选香槟及特调饮品" ]
             },
             en: {
                 boarding: "BOARDING NOW",
@@ -387,7 +489,6 @@
                 invite_text_2: "We've turned Rosewood into a playground in the clouds. No rules, just laughter, balloons and magic!",
                 sign_off: "- Ari's Mommy & Daddy",
                 gallery_title: "Adventure Moments",
-                gallery_sub: "Captain Ari's Gallery",
                 ready_party: "Ready to Party?!",
                 itinerary_title: "Flight Itinerary",
                 time_1_desc: "Check-in & Cloud Photo Zone",
@@ -395,8 +496,6 @@
                 time_2_desc: "Energy Refuel (Lunch)",
                 time_3_desc: "Cake Ceremony!",
                 menu_title: "In-Flight Menu",
-                btn_kids: "Junior Pilots 👶",
-                btn_adults: "First Class 🥂",
                 rsvp_title: "Ready for Takeoff?",
                 form_name: "PASSENGER NAME",
                 form_adults: "ADULTS",
@@ -405,37 +504,26 @@
                 btn_blast: "BLAST OFF!",
                 confirmed: "BOARDING CONFIRMED!",
                 see_you: "See you in the clouds!",
-                menu_kids_items: [
-                    "Mini Wagyu Cheeseburgers", "Cloud-shaped Chicken Sandwiches", "Rainbow Fruit Rocket Skewers", "Creamy Mushroom Mac & Cheese"
-                ],
-                menu_adults_items: [
-                    "Rosewood Signature Dim Sum", "Mini Boston Lobster Rolls", "Champagne & Crafted Beverages"
-                ]
+                menu_kids: [ "Mini Wagyu Cheeseburgers", "Cloud-shaped Chicken Sandwiches", "Rainbow Fruit Rocket Skewers", "Creamy Mushroom Mac & Cheese", "Fresh Juice Bar" ],
+                menu_adults: [ "Rosewood Signature Dim Sum", "Mini Boston Lobster Rolls", "Black Truffle Tarts", "Champagne & Crafted Beverages" ]
             }
         };
 
-        // --- 2. 語言切換邏輯 ---
+        let currentLang = 'tc';
+
         function setLang(lang) {
+            currentLang = lang;
             const t = translations[lang];
             
-            // 更新文字
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (t[key]) el.innerHTML = t[key];
             });
 
-            // 更新菜單列表
-            const kidsList = document.getElementById('kids-list');
-            kidsList.innerHTML = t.menu_kids_items.map(item => 
-                `<li class="flex items-center gap-2 justify-center"><i class="fas fa-utensils text-sky-300"></i> ${item}</li>`
-            ).join('');
+            // Re-render menu to apply language
+            const activeType = document.getElementById('btn-kids').classList.contains('bg-sky-400') ? 'kids' : 'adults';
+            switchMenu(activeType);
 
-            const adultsList = document.getElementById('adults-list');
-            adultsList.innerHTML = t.menu_adults_items.map(item => 
-                `<li class="flex items-center gap-2 justify-center"><i class="fas fa-wine-glass text-rose-300"></i> ${item}</li>`
-            ).join('');
-
-            // 更新按鈕樣式
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active', 'bg-rose-500', 'text-white');
                 btn.classList.add('text-slate-400');
@@ -446,29 +534,29 @@
             });
         }
 
-        // 初始化繁體中文
-        setLang('tc');
-
-        // --- 3. 音效與動畫邏輯 ---
+        // --- Audio Logic ---
         const bgm = document.getElementById('bgm');
-        const btn = document.getElementById('music-toggle');
+        bgm.volume = 0.5;
         let isPlaying = false;
         
-        btn.addEventListener('click', () => {
+        document.getElementById('music-toggle').addEventListener('click', function() {
             if(!isPlaying) {
-                bgm.play().catch(e => console.log("Audio play failed"));
-                btn.innerHTML = '<i class="fas fa-volume-up text-rose-500 text-xl"></i>';
-                btn.classList.add('animate-pulse');
+                bgm.play().then(() => {
+                    this.innerHTML = '<i class="fas fa-volume-up text-rose-500 text-xl"></i>';
+                    this.classList.remove('animate-bounce');
+                    this.classList.add('ring-4', 'ring-rose-200');
+                }).catch(e => alert("Please interact with the page first!"));
             } else {
                 bgm.pause();
-                btn.innerHTML = '<i class="fas fa-music text-rose-300 text-xl"></i>';
-                btn.classList.remove('animate-pulse');
+                this.innerHTML = '<i class="fas fa-music text-rose-300 text-xl"></i>';
+                this.classList.add('animate-bounce');
+                this.classList.remove('ring-4', 'ring-rose-200');
             }
             isPlaying = !isPlaying;
         });
 
         function playSfx(type) {
-            const id = type === 'pop' ? 'sfx-pop' : 'sfx-boing';
+            const id = 'sfx-' + type;
             const audio = document.getElementById(id);
             if(audio) {
                 audio.currentTime = 0;
@@ -476,67 +564,84 @@
             }
         }
 
+        // --- Menu Logic ---
+        function switchMenu(type) {
+            const menuBox = document.getElementById('menu-content');
+            const items = type === 'kids' ? translations[currentLang].menu_kids : translations[currentLang].menu_adults;
+            const icon = type === 'kids' ? 'utensils' : 'wine-glass-alt';
+            const color = type === 'kids' ? 'text-sky-400' : 'text-rose-400';
+            
+            // Animation reset
+            menuBox.style.opacity = 0;
+            menuBox.style.transform = "translateY(10px)";
+            
+            setTimeout(() => {
+                let html = `<ul class="space-y-4 text-xl text-slate-600 font-medium text-center">`;
+                items.forEach(item => {
+                    html += `<li class="flex items-center justify-center gap-3"><i class="fas fa-${icon} ${color}"></i> ${item}</li>`;
+                });
+                html += `</ul>`;
+                menuBox.innerHTML = html;
+                
+                // Toggle Buttons
+                const btnKids = document.getElementById('btn-kids');
+                const btnAdults = document.getElementById('btn-adults');
+                if(type === 'kids') {
+                    btnKids.className = "px-8 py-3 rounded-full font-bold text-lg bg-sky-400 text-white shadow-lg transform scale-110 transition-all";
+                    btnAdults.className = "px-8 py-3 rounded-full font-bold text-lg bg-white text-slate-500 shadow-md hover:bg-sky-100 transition-all";
+                } else {
+                    btnAdults.className = "px-8 py-3 rounded-full font-bold text-lg bg-rose-400 text-white shadow-lg transform scale-110 transition-all";
+                    btnKids.className = "px-8 py-3 rounded-full font-bold text-lg bg-white text-slate-500 shadow-md hover:bg-sky-100 transition-all";
+                }
+
+                menuBox.style.opacity = 1;
+                menuBox.style.transform = "translateY(0)";
+            }, 200);
+            playSfx('pop');
+        }
+
+        // --- Countdown ---
         const partyDate = new Date("January 25, 2026 12:30:00").getTime();
         setInterval(() => {
             const now = new Date().getTime();
             const diff = partyDate - now;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("countdown").innerText = `COUNTDOWN: ${days} DAYS ${hours} HOURS`;
+            document.getElementById("countdown").innerHTML = `<i class="fas fa-clock mr-2"></i> T-MINUS: ${days} DAYS ${hours} HOURS`;
         }, 1000);
 
+        // --- Scroll Triggers ---
         window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            document.querySelectorAll('.parallax-layer').forEach(layer => {
-                const speed = layer.getAttribute('data-speed');
-                layer.style.transform = `translateY(${scrolled * speed}px)`;
-            });
             const funnyTrigger = document.getElementById('funny-trigger');
             if(funnyTrigger.getBoundingClientRect().top < window.innerHeight * 0.8) {
-                funnyTrigger.classList.remove('opacity-0', 'translate-y-10');
+                funnyTrigger.classList.remove('opacity-0', 'translate-y-20');
             }
         });
 
-        function switchMenu(type) {
-            const kidsMenu = document.getElementById('menu-kids');
-            const adultMenu = document.getElementById('menu-adults');
-            const btnKids = document.getElementById('btn-kids');
-            const btnAdults = document.getElementById('btn-adults');
-
-            if (type === 'kids') {
-                kidsMenu.classList.remove('hidden');
-                adultMenu.classList.add('hidden');
-                btnKids.classList.add('bg-sky-400', 'text-white', 'scale-110');
-                btnKids.classList.remove('bg-white', 'text-slate-500');
-                btnAdults.classList.remove('bg-sky-400', 'text-white', 'scale-110');
-                btnAdults.classList.add('bg-white', 'text-slate-500');
-            } else {
-                kidsMenu.classList.add('hidden');
-                adultMenu.classList.remove('hidden');
-                btnAdults.classList.add('bg-sky-400', 'text-white', 'scale-110');
-                btnAdults.classList.remove('bg-white', 'text-slate-500');
-                btnKids.classList.remove('bg-sky-400', 'text-white', 'scale-110');
-                btnKids.classList.add('bg-white', 'text-slate-500');
-            }
-            playSfx('pop');
-        }
-
+        // --- Submit & Easter Egg ---
         function launchRocket(e) {
             e.preventDefault();
-            document.getElementById('sfx-rocket').play();
+            playSfx('rocket');
+            playSfx('cheer');
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.8 } });
+            
             const overlay = document.getElementById('rocket-overlay');
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
+            
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
-            }, 4000);
+            }, 5000);
         }
 
         function triggerEasterEgg() {
             document.getElementById('easter-modal').classList.remove('hidden');
             playSfx('boing');
         }
+
+        // Init
+        setLang('tc');
     </script>
 </body>
 </html>
